@@ -1,59 +1,69 @@
-// 1. Easy Card Creator
 const tools = [
-    { name: "Menu", desc: "Main control interface.", img: "https://picsum.photos/400/200?random=1" },
-    { name: "Deobfuscator", desc: "Reverse engineer complex code.", img: "https://picsum.photos/400/200?random=2" },
-    { name: "Obfuscator", desc: "Secure your scripts.", img: "https://picsum.photos/400/200?random=3" },
-    { name: "PC Checker", desc: "System diagnostics and hardware ID.", img: "https://picsum.photos/400/200?random=4" }
+    { name: "Menu", desc: "The core interface for everything.", img: "https://picsum.photos/500/300?1", tags: ["Free", "Open Source"], label: "Essential" },
+    { name: "Deobfuscator", desc: "Clean up the messiest code instantly.", img: "https://picsum.photos/500/300?2", tags: ["Paid"], label: "Overpowered" },
+    { name: "Obfuscator", desc: "Military grade protection.", img: "https://picsum.photos/500/300?3", tags: ["Free"], label: "Trusted" },
+    { name: "PC Checker", desc: "Analyze system specs and IDs.", img: "https://picsum.photos/500/300?4", tags: ["Internal"], label: "Fast" }
 ];
 
+// Easy Card Injection
 const container = document.getElementById('card-container');
-
 tools.forEach(tool => {
     const card = document.createElement('div');
-    card.className = 'card';
+    card.className = 'card reveal-text';
     card.innerHTML = `
-        <img src="${tool.img}" alt="${tool.name}">
+        <span class="label">${tool.label}</span>
+        <img src="${tool.img}" style="border-radius:15px; margin-bottom:15px;">
         <h3>${tool.name}</h3>
         <p>${tool.desc}</p>
+        <div>${tool.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
     `;
     container.appendChild(card);
 });
 
-// 2. Mouse Glow Effect
-const glow = document.getElementById('cursor-glow');
-document.addEventListener('mousemove', (e) => {
-    glow.style.left = e.clientX + 'px';
-    glow.style.top = e.clientY + 'px';
+// Scroll Logic: Paintbrush and Reveal
+window.addEventListener('scroll', () => {
+    const scrollPos = window.scrollY;
+    const windowHeight = window.innerHeight;
+    
+    // Update Paintbrush Reveal (0% to 100% based on scroll)
+    const progress = Math.min(scrollPos / (windowHeight / 2), 1) * 100;
+    document.documentElement.style.setProperty('--reveal-progress', progress + '%');
+
+    // Reveal items on scroll
+    document.querySelectorAll('.reveal-text').forEach(el => {
+        if (el.getBoundingClientRect().top < windowHeight - 50) {
+            el.classList.add('visible');
+        }
+    });
 });
 
-document.addEventListener('mousedown', () => glow.style.opacity = '1');
-document.addEventListener('mouseup', () => glow.style.opacity = '0.6');
-
-// 3. Connecting Stars Animation
+// Star Logic with Mouse Proximity
 const canvas = document.getElementById('canvas-stars');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+let mouse = { x: null, y: null };
 
-let particles = [];
+window.addEventListener('mousemove', (e) => {
+    mouse.x = e.x;
+    mouse.y = e.y;
+    // Cursor glow update
+    const glow = document.getElementById('cursor-glow');
+    glow.style.left = e.x + 'px';
+    glow.style.top = e.y + 'px';
+});
+
+// (Keep the Particle class and Init from previous message, but modify draw:)
 class Particle {
-    constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2;
-        this.speedX = Math.random() * 0.5 - 0.25;
-        this.speedY = Math.random() * 0.5 - 0.25;
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x > canvas.width) this.x = 0;
-        if (this.x < 0) this.x = canvas.width;
-        if (this.y > canvas.height) this.y = 0;
-        if (this.y < 0) this.y = canvas.height;
-    }
+    /* ... constructor same as before ... */
     draw() {
-        ctx.fillStyle = 'rgba(58, 134, 255, 0.8)';
+        // Calculate distance to mouse
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Stars get more transparent when mouse is near
+        let opacity = distance < 150 ? 0.1 : 0.8;
+        
+        ctx.fillStyle = `rgba(0, 212, 255, ${opacity})`;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
