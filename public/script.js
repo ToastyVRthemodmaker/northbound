@@ -1,9 +1,16 @@
-console.log("Northbound loaded");
+const glow = document.querySelector(".cursor-glow");
 
-function buy(tool){
+document.addEventListener("mousemove", e => {
 
-alert("Opening " + tool + " page...");
+glow.style.left = e.clientX - 200 + "px";
+glow.style.top = e.clientY - 200 + "px";
 
-/* later you can redirect to store pages */
+});
 
-}
+document.addEventListener("mousedown", () => {
+glow.style.opacity = "1";
+});
+
+document.addEventListener("mouseup", () => {
+glow.style.opacity = "0.6";
+});
